@@ -1,4 +1,5 @@
 const sqlDB = require('./sqlDB');
+const defaultSettings = require('../config/defaultSettings');
 
 class SettingsService {
   static async initDB() {
@@ -11,26 +12,8 @@ class SettingsService {
         )
       `);
 
-      // Default values to insert if they perfectly match the static text currently deployed
-      const defaults = [
-        { key: 'siteName', val: 'Fintech Point' },
-        { key: 'logoDisplay', val: 'text' }, // 'text' | 'image'
-        { key: 'logoImageUrl', val: '' },
-        { key: 'heroTitle', val: 'Building the Future of Digital Finance' },
-        { key: 'heroSubtitle', val: 'We specialize in creating robust, scalable, and innovative web applications for businesses aiming to thrive in the modern digital ecosystem.' },
-        { key: 'heroPrimaryBtnLabel', val: 'Our Work' },
-        { key: 'heroSecondaryBtnLabel', val: 'Contact Us' },
-        { key: 'aboutDescription', val: 'Fintech Point is an innovative software studio based in Bangladesh heavily focused on delivering cutting-edge SaaS platforms, Point of Sale systems, and robust web applications for global and localized markets.' },
-        { key: 'contactAddress', val: 'Fintech Point, Mymensingh, Bangladesh' },
-        { key: 'contactEmail', val: 'admin@fintechpoint.com' },
-        { key: 'contactPhone', val: '+880 1234 567890' },
-        { key: 'socialLinkedin', val: 'https://linkedin.com/company/fintechpoint' },
-        { key: 'socialGithub', val: 'https://github.com/fintechpoint' },
-        { key: 'socialX', val: 'https://x.com/fintechpoint' },
-        { key: 'copyrightText', val: 'Fintech Point. All rights reserved.' },
-        { key: 'maintenanceMode', val: 'false' }
-      ];
-
+      // Default values mapping to the modularized configuration logic
+      const defaults = defaultSettings;
       // Insert defaults if missing utilizing IGNORE keyword
       for (const def of defaults) {
         await sqlDB.query(

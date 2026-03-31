@@ -18,6 +18,7 @@ interface SiteSettings {
   socialX: string;
   copyrightText: string;
   maintenanceMode: string;
+  coreCapabilities: string;
   [key: string]: string;
 }
 
@@ -37,7 +38,12 @@ const defaultSettings: SiteSettings = {
   socialGithub: 'https://github.com/fintechpoint',
   socialX: 'https://x.com/fintechpoint',
   copyrightText: 'Fintech Point. All rights reserved.',
-  maintenanceMode: 'false'
+  maintenanceMode: 'false',
+  coreCapabilities: JSON.stringify([
+    { id: '1', title: 'SaaS Development', description: 'Building scalable, multi-tenant software solutions with modern architectures.', icon: 'Layout' },
+    { id: '2', title: 'Fintech Integrations', description: 'Seamless payment gateway integrations and secure financial data processing.', icon: 'CreditCard' },
+    { id: '3', title: 'IoT & Biometrics', description: 'Expertise in ZKTeco integration and real-time hardware-software communication.', icon: 'Fingerprint' }
+  ])
 };
 
 interface SettingsContextType {

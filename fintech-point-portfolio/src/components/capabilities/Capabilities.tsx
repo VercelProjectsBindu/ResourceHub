@@ -1,6 +1,7 @@
+import React from 'react';
 import { motion } from 'motion/react';
 import { Layout, CreditCard, Fingerprint } from 'lucide-react';
-import { CAPABILITIES } from '../../constants';
+import { useSettings } from '../../context/SettingsContext';
 
 const ICON_MAP = {
   Layout: Layout,
@@ -9,6 +10,22 @@ const ICON_MAP = {
 };
 
 export default function Capabilities() {
+  const { settings } = useSettings();
+  
+  // Safely parse the coreCapabilities array from Context
+  const dynamicCapabilities = React.useMemo(() => {
+    try {
+      const parsed = JSON.parse(settings.coreCapabilities);
+      return Array.isArray(parsed) && parsed.length > 0 ? parsed : [];
+    } catch {
+      return [
+        { title: 'SaaS Development', description: 'Building scalable solutions.', icon: 'Layout' },
+        { title: 'Fintech Integrations', description: 'Integration management.', icon: 'CreditCard' },
+        { title: 'IoT & Biometrics', description: 'Hardware communications.', icon: 'Fingerprint' }
+      ];
+    }
+  }, [settings.coreCapabilities]);
+
   return (
     <section className="py-24 border-y border-border">
       <div className="container mx-auto px-6">
@@ -20,7 +37,7 @@ export default function Capabilities() {
         </div>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-12">
-          {CAPABILITIES.map((cap, index) => {
+          {dynamicCapabilities.map((cap, index) => {
             const Icon = ICON_MAP[cap.icon as keyof typeof ICON_MAP];
             return (
               <motion.div
