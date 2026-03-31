@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Github, ExternalLink, Loader2 } from 'lucide-react';
+import { ExternalLink, Code2, Loader2 } from 'lucide-react';
 import { apiService } from '../../Service/api';
 import { Project } from '../../types';
 
@@ -8,6 +8,10 @@ export default function Projects() {
   const [projects, setProjects] = useState<Project[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<'Web Applications' | 'Mobile Apps'>('Web Applications');
+
+  const handleEngagement = (action: string) => {
+    apiService.post('/api/stats/engage', { action }).catch(() => {});
+  };
 
   useEffect(() => {
     const fetchProjects = async () => {
@@ -63,7 +67,7 @@ export default function Projects() {
         ) : (
           <motion.div 
             layout
-            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"
+            className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-3 gap-3 md:gap-8"
           >
             <AnimatePresence mode='popLayout'>
               {filteredProjects.map((project) => (
@@ -78,33 +82,36 @@ export default function Projects() {
                 >
                   <div className="aspect-video overflow-hidden relative">
                     <img 
-                      src={project.image} 
+                      src={project.image || 'https://images.unsplash.com/photo-1555066931-4365d14bab8c?w=800&q=80'} 
                       alt={project.title}
                       className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
                       referrerPolicy="no-referrer"
                     />
                     <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                      <a href={project.githubUrl} target="_blank" rel="noopener noreferrer" className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors">
-                        <Github className="w-5 h-5" />
+                      <a href={project.githubUrl} onClick={() => handleEngagement(`github_click_${project.id}`)} target="_blank" rel="noopener noreferrer" className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors">
+                        <Code2 className="w-5 h-5" />
                       </a>
-                      <a href={project.externalUrl} target="_blank" rel="noopener noreferrer" className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors">
+                      <a href={project.externalUrl} onClick={() => handleEngagement(`external_click_${project.id}`)} target="_blank" rel="noopener noreferrer" className="p-3 bg-white/10 backdrop-blur-md rounded-full hover:bg-white/20 transition-colors">
                         <ExternalLink className="w-5 h-5" />
                       </a>
                     </div>
                   </div>
                   
-                  <div className="p-6">
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {project.techStack.map(tech => (
-                        <span key={tech} className="px-2 py-1 bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider rounded">
+                  <div className="p-3 md:p-6 flex flex-col flex-grow">
+                    <div className="flex justify-between items-start mb-2 md:mb-4">
+                      <div>
+                        <div className="text-primary text-[10px] md:text-sm font-bold uppercase tracking-wider mb-0.5 md:mb-2">{project.category}</div>
+                        <h3 className="text-sm md:text-2xl font-bold line-clamp-1">{project.title}</h3>
+                      </div>
+                    </div>
+                    <p className="text-secondary text-[10px] md:text-base line-clamp-2 md:line-clamp-3 mb-4 md:mb-6 flex-grow">{project.description}</p>
+                    <div className="flex flex-wrap gap-1 md:gap-2 mt-auto">
+                      {project.techStack?.slice(0, 3).map((tech: string, i: number) => (
+                        <span key={i} className="px-1.5 md:px-3 py-0.5 md:py-1 bg-white/5 border border-white/10 rounded-full text-[8px] md:text-xs">
                           {tech}
                         </span>
                       ))}
                     </div>
-                    <h3 className="text-xl font-bold mb-2 group-hover:text-primary transition-colors">{project.title}</h3>
-                    <p className="text-secondary text-sm line-clamp-2 leading-relaxed">
-                      {project.description}
-                    </p>
                   </div>
                 </motion.div>
               ))}

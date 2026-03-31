@@ -2,6 +2,7 @@ const express = require('express');
 const router = express.Router();
 const SQLCRUDService = require('../services/SQLCRUDService');
 const sqlDB = require('../services/sqlDB');
+const { verifyToken } = require('../middleware/authMiddleware');
 
 const projectService = new SQLCRUDService('projects', sqlDB);
 
@@ -27,7 +28,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create new project
-router.post('/', async (req, res) => {
+router.post('/', verifyToken, async (req, res) => {
   try {
     const newProject = await projectService.create(req.body);
     res.status(201).json(newProject);
@@ -37,7 +38,7 @@ router.post('/', async (req, res) => {
 });
 
 // Update project
-router.put('/:id', async (req, res) => {
+router.put('/:id', verifyToken, async (req, res) => {
   try {
     const updatedProject = await projectService.update(req.params.id, req.body);
     res.json(updatedProject);
@@ -47,7 +48,7 @@ router.put('/:id', async (req, res) => {
 });
 
 // Delete project
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', verifyToken, async (req, res) => {
   try {
     const deletedProject = await projectService.delete(req.params.id);
     res.json({ message: 'Project deleted', project: deletedProject });

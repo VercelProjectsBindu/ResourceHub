@@ -25,16 +25,8 @@ class AuthService {
   }
 
   async findByEmail(email) {
-    return new Promise((resolve, reject) => {
-      this.db.query(
-        'SELECT * FROM users WHERE email = ?',
-        [email],
-        (err, results) => {
-          if (err) return reject(err);
-          resolve(results[0]);
-        }
-      );
-    });
+    const results = await this.db.query('SELECT * FROM users WHERE email = ?', [email]);
+    return results[0];
   }
 
   async register({ username, email, password, role = 'user' }) {
@@ -58,29 +50,16 @@ class AuthService {
     if (existingEmail) throw new Error('Email already registered');
 
     const hashedPassword = await this.hashPassword(password);
-    return new Promise((resolve, reject) => {
-      this.db.query(
-        'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
-        [username, email, hashedPassword, role],
-        (err, results) => {
-          if (err) return reject(err);
-          resolve({ id: results.insertId, username, email, role });
-        }
-      );
-    });
+    const results = await this.db.query(
+      'INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)',
+      [username, email, hashedPassword, role]
+    );
+    return { id: results.insertId, username, email, role };
   }
 
   async findByUsername(username) {
-    return new Promise((resolve, reject) => {
-      this.db.query(
-        'SELECT * FROM users WHERE username = ?',
-        [username],
-        (err, results) => {
-          if (err) return reject(err);
-          resolve(results[0]);
-        }
-      );
-    });
+    const results = await this.db.query('SELECT * FROM users WHERE username = ?', [username]);
+    return results[0];
   }
 
   async login(username, password) {

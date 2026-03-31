@@ -1,18 +1,34 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Lock, User } from 'lucide-react';
+import { Lock, User, Loader2 } from 'lucide-react';
+import { apiService } from '../../Service/api';
 
 export default function Login({ onLogin }: { onLogin: () => void }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // Simple mock auth
-    if (username === 'admin' && password === 'admin123') {
-      onLogin();
-    } else {
-      alert('Invalid credentials');
+    setIsLoading(true);
+    setError('');
+    console.log('username:', username);
+    console.log('password:', password);
+    try {
+      const response = await apiService.post<{ token: string, user: any }>('/api/auth/login', {
+        username,
+        password
+      });
+      
+      if (response.token) {
+        apiService.setAuth(response.token, response.user);
+        onLogin();
+      }
+    } catch (err: any) {
+      setError(err.response?.data?.error || 'Authentication failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -58,13 +74,36 @@ export default function Login({ onLogin }: { onLogin: () => void }) {
             </div>
           </div>
 
+          {error && (
+            <motion.div 
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-500/10 border border-red-500/20 text-red-500 p-4 rounded-xl text-sm font-medium mb-6"
+            >
+              {error}
+            </motion.div>
+          )}
+
           <button 
             type="submit" 
-            className="w-full py-5 bg-primary hover:bg-primary/90 text-white font-black rounded-2xl transition-all shadow-xl shadow-primary/20 hover:-translate-y-1 active:scale-[0.98]"
+            disabled={isLoading}
+            className="w-full py-5 bg-primary hover:bg-primary/90 text-white font-black rounded-2xl transition-all shadow-xl shadow-primary/20 hover:-translate-y-1 active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
-            Authenticate
+            {isLoading ? <Loader2 className="w-5 h-5 animate-spin" /> : 'Authenticate'}
           </button>
         </form>
+
+        <div className="mt-8 text-center">
+          <p className="text-secondary text-sm">
+            Don't have an account?{' '}
+            <button 
+              onClick={() => window.location.href = '/register'}
+              className="text-primary font-bold hover:underline"
+            >
+              Sign Up
+            </button>
+          </p>
+        </div>
       </motion.div>
     </div>
   );

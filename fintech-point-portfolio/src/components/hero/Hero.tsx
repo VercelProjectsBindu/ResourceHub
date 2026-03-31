@@ -1,6 +1,9 @@
 import { motion } from 'motion/react';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function Hero() {
+  const { settings } = useSettings();
+
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
       {/* Background Glow */}
@@ -13,12 +16,10 @@ export default function Hero() {
           transition={{ duration: 0.6 }}
         >
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6">
-            Innovative Solutions for <br />
-            <span className="text-primary">Modern Businesses</span>
+            {settings.heroTitle}
           </h1>
           <p className="text-xl text-secondary max-w-2xl mx-auto mb-10">
-            Expertise in <span className="text-white font-medium">Laravel</span> and <span className="text-white font-medium">React</span>. 
-            Delivering high-performance Web and Mobile applications tailored for the fintech industry.
+            {settings.heroSubtitle}
           </p>
           
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">

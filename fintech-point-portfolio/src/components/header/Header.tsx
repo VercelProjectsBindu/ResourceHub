@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Menu, X, Laptop, Github, Linkedin, Mail } from 'lucide-react';
+import { Menu, X, Laptop, Code, Mail } from 'lucide-react';
+import { apiService } from '../../Service/api';
+import { useSettings } from '../../context/SettingsContext';
 
 const Header = () => {
+  const { settings } = useSettings();
   const [isOpen, setIsOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
@@ -20,6 +23,12 @@ const Header = () => {
     { name: 'Projects', href: '#projects' },
     { name: 'Contact', href: '#contact' },
   ];
+
+  const handleEngagement = (action: string) => {
+    try {
+      apiService.post('/api/stats/engage', { action });
+    } catch(e) {}
+  };
 
   return (
     <header 
@@ -39,7 +48,15 @@ const Header = () => {
             <Laptop className="w-6 h-6 text-white" />
           </div>
           <span className="text-xl font-black tracking-tighter text-white">
-            FINTECH<span className="text-primary italic">POINT</span>
+            {settings.logoDisplay === 'image' && settings.logoImageUrl ? (
+              <img src={settings.logoImageUrl} alt={settings.siteName} className="h-8 object-contain" />
+            ) : (
+              settings.siteName.split(' ').map((word, i, arr) => (
+                <React.Fragment key={i}>
+                  {i === arr.length - 1 ? <span className="text-primary italic">{word}</span> : word + ' '}
+                </React.Fragment>
+              ))
+            )}
           </span>
         </motion.a>
 
@@ -58,15 +75,7 @@ const Header = () => {
               <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all group-hover:w-full"></span>
             </motion.a>
           ))}
-          <motion.a 
-            href="/dashboard"
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="px-6 py-2.5 bg-white/5 border border-white/10 rounded-full text-xs font-black uppercase tracking-widest hover:bg-white/10 transition-all"
-          >
-            Dashboard
-          </motion.a>
-        </nav>
+      </nav>
 
         {/* Mobile Menu Toggle */}
         <button 
@@ -99,16 +108,16 @@ const Header = () => {
               ))}
               <div className="pt-6 border-t border-white/5 flex items-center justify-between">
                 <div className="flex gap-4">
-                  <Github className="w-6 h-6 text-secondary hover:text-white transition-colors" />
-                  <Linkedin className="w-6 h-6 text-secondary hover:text-white transition-colors" />
-                  <Mail className="w-6 h-6 text-secondary hover:text-white transition-colors" />
+                  <a href={settings.socialGithub || '#'} target="_blank" rel="noopener noreferrer" onClick={() => handleEngagement('header_github')}>
+                    <Code className="w-6 h-6 text-secondary hover:text-white transition-colors" />
+                  </a>
+                  <a href={settings.socialX || '#'} target="_blank" rel="noopener noreferrer" onClick={() => handleEngagement('header_x')}>
+                    <X className="w-6 h-6 text-secondary hover:text-white transition-colors" />
+                  </a>
+                  <a href={`mailto:${settings.contactEmail || 'admin@fintechpoint.com'}`} onClick={() => handleEngagement('header_email')}>
+                    <Mail className="w-6 h-6 text-secondary hover:text-white transition-colors" />
+                  </a>
                 </div>
-                <a 
-                  href="/dashboard"
-                  className="px-6 py-3 bg-primary rounded-xl text-sm font-bold"
-                >
-                  Admin Login
-                </a>
               </div>
             </div>
           </motion.div>

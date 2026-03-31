@@ -2,8 +2,10 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Mail, Phone, MapPin, Send, Loader2, CheckCircle2 } from 'lucide-react';
 import { apiService } from '../../Service/api';
+import { useSettings } from '../../context/SettingsContext';
 
 export default function Contact() {
+  const { settings } = useSettings();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -49,7 +51,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-bold mb-1">Email Us</h3>
-                  <p className="text-secondary">contact@fintechpoint.com</p>
+                  <p className="text-secondary">{settings.contactEmail || 'admin@fintechpoint.com'}</p>
                 </div>
               </div>
 
@@ -59,7 +61,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-bold mb-1">Call Us</h3>
-                  <p className="text-secondary">+880 1234 567890</p>
+                  <p className="text-secondary">{settings.contactPhone || '+880 1234 567890'}</p>
                 </div>
               </div>
 
@@ -69,7 +71,7 @@ export default function Contact() {
                 </div>
                 <div>
                   <h3 className="font-bold mb-1">Visit Us</h3>
-                  <p className="text-secondary">Fintech Point, Mymensingh, Bangladesh</p>
+                  <p className="text-secondary">{settings.contactAddress || 'Fintech Point, Mymensingh, Bangladesh'}</p>
                 </div>
               </div>
             </div>

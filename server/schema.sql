@@ -40,6 +40,37 @@ CREATE TABLE IF NOT EXISTS users (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- Create activity_logs table
+CREATE TABLE IF NOT EXISTS activity_logs (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  user_id INT NULL,
+  username VARCHAR(100) NULL,
+  action VARCHAR(255) NOT NULL,
+  entity VARCHAR(100) NOT NULL,
+  details JSON NULL,
+  ip_address VARCHAR(45) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- Create analytics table to track profile views and engagement
+CREATE TABLE IF NOT EXISTS analytics (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  type ENUM('page_view', 'engagement') NOT NULL,
+  action VARCHAR(100) NULL,
+  ip_address VARCHAR(45) NULL,
+  region VARCHAR(100) NULL,
+  countryCode VARCHAR(10) NULL,
+  user_agent VARCHAR(255) NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Create site_settings table for Global CMS
+CREATE TABLE IF NOT EXISTS site_settings (
+  setting_key VARCHAR(100) UNIQUE PRIMARY KEY,
+  setting_value TEXT
+);
+
 -- Insert sample projects
 INSERT INTO projects (title, category, description, techStack, image, githubUrl, externalUrl) VALUES
 ('LocalLink', 'Web Applications', 'A comprehensive local services marketplace.', 'Laravel, React, MySQL', 'https://picsum.photos/seed/locallink/600/400', 'https://github.com/fintechpoint/locallink', 'https://locallink.example.com'),

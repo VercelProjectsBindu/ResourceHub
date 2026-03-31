@@ -2,11 +2,12 @@ const express = require('express');
 const router = express.Router();
 const SQLCRUDService = require('../services/SQLCRUDService');
 const sqlDB = require('../services/sqlDB');
+const { verifyToken } = require('../middleware/authMiddleware');
 
 const contactService = new SQLCRUDService('contacts', sqlDB);
 
 // Get all contact messages
-router.get('/', async (req, res) => {
+router.get('/', verifyToken, async (req, res) => {
   try {
     const messages = await contactService.getAll();
     res.json(messages);

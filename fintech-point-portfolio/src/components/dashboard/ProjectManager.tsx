@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Plus, Pencil, Trash2, Globe, Github as GithubIcon, X } from 'lucide-react';
+import { Plus, Pencil, Trash2, Globe, Code, X } from 'lucide-react';
 import { apiService } from '../../Service/api';
 import { Project } from '../../types';
 
@@ -24,8 +24,14 @@ export default function ProjectManager() {
 
   const fetchProjects = async () => {
     try {
-      const data = await apiService.get<Project[]>('/api/projects');
-      setProjects(data);
+      const data = await apiService.get<any[]>('/api/projects');
+      const formattedData = data.map(p => ({
+        ...p,
+        techStack: typeof p.techStack === 'string' 
+          ? p.techStack.split(',').map((s: string) => s.trim()).filter(Boolean)
+          : (p.techStack || [])
+      }));
+      setProjects(formattedData);
     } catch (error) {
       console.error('Failed to fetch projects');
     } finally {
@@ -39,8 +45,8 @@ export default function ProjectManager() {
       setFormData({
         title: project.title,
         category: project.category,
-        description: project.description,
-        techStack: project.techStack.join(', '),
+        description: project.description || '',
+        techStack: Array.isArray(project.techStack) ? project.techStack.join(', ') : (project.techStack || ''),
         image: project.image,
         githubUrl: project.githubUrl,
         externalUrl: project.externalUrl
@@ -94,8 +100,8 @@ export default function ProjectManager() {
         </button>
       </div>
 
-      <div className="bg-card border border-border rounded-2xl overflow-hidden">
-        <table className="w-full text-left">
+      <div className="bg-card border border-border rounded-2xl overflow-x-auto w-full">
+        <table className="w-full text-left min-w-[600px]">
           <thead className="bg-white/5 text-secondary text-sm">
             <tr>
               <th className="px-6 py-4">Project</th>
@@ -109,7 +115,7 @@ export default function ProjectManager() {
               <tr key={p.id} className="hover:bg-white/5 transition-colors">
                 <td className="px-6 py-4">
                   <div className="flex items-center gap-4">
-                    <img src={p.image} className="w-12 h-12 rounded-lg object-cover bg-background" alt="" />
+                    <img src={p.image || 'https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=400&q=80'} className="w-12 h-12 rounded-lg object-cover bg-background" alt="" />
                     <div className="font-bold">{p.title}</div>
                   </div>
                 </td>
@@ -118,8 +124,12 @@ export default function ProjectManager() {
                 </td>
                 <td className="px-6 py-4">
                   <div className="flex gap-3 text-secondary">
-                    <Globe className="w-4 h-4" />
-                    <GithubIcon className="w-4 h-4" />
+                    <a href={p.externalUrl} target="_blank" rel="noopener noreferrer">
+                      <X className="w-4 h-4" />
+                    </a>
+                    <a href={p.githubUrl} target="_blank" rel="noopener noreferrer">
+                      <Code className="w-4 h-4" />
+                    </a>
                   </div>
                 </td>
                 <td className="px-6 py-4 text-right">
