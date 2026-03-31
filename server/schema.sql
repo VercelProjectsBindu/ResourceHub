@@ -27,8 +27,26 @@ CREATE TABLE IF NOT EXISTS contacts (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
 );
 
+-- Create users table for authentication
+CREATE TABLE IF NOT EXISTS users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(100) UNIQUE NOT NULL,
+  email VARCHAR(255) UNIQUE NOT NULL,
+  password VARCHAR(255) NOT NULL, -- Hashed password
+  role ENUM('admin', 'user') DEFAULT 'user',
+  is_active BOOLEAN DEFAULT TRUE,
+  last_login TIMESTAMP NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
+);
+
 -- Insert sample projects
 INSERT INTO projects (title, category, description, techStack, image, githubUrl, externalUrl) VALUES
 ('LocalLink', 'Web Applications', 'A comprehensive local services marketplace.', 'Laravel, React, MySQL', 'https://picsum.photos/seed/locallink/600/400', 'https://github.com/fintechpoint/locallink', 'https://locallink.example.com'),
 ('SANAD', 'Web Applications', 'An innovative platform for social welfare.', 'Next.js, Tailwind, Firebase', 'https://picsum.photos/seed/sanad/600/400', 'https://github.com/fintechpoint/sanad', 'https://sanad.example.com'),
 ('Fintech Point POS', 'Web Applications', 'A robust Point of Sale system.', 'PHP, React, IoT', 'https://picsum.photos/seed/pos/600/400', 'https://github.com/fintechpoint/pos', 'https://pos.fintechpoint.com');
+
+-- Insert sample users (Passwords are plain text for initial testing, should be hashed in production)
+INSERT INTO users (username, email, password, role) VALUES
+('admin', 'admin@fintechpoint.com', 'admin123', 'admin'),
+('user', 'user@fintechpoint.com', 'user123', 'user');
