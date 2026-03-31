@@ -13,10 +13,10 @@ export const createAppRouter = (isAuthenticated: boolean, setIsAuthenticated: (v
     path: "/login",
     element: isAuthenticated ? <Navigate to="/dashboard" replace /> : <Login onLogin={() => setIsAuthenticated(true)} />,
   },
-  {
-    path: "/register",
-    element: isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />,
-  },
+  // {
+  //   path: "/register",
+  //   element: isAuthenticated ? <Navigate to="/dashboard" replace /> : <Register />,
+  // },
   {
     path: "/dashboard",
     element: isAuthenticated ? <Dashboard /> : <Navigate to="/login" replace />,
